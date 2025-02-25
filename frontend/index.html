@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Upload</title>
+</head>
+<body>
+    <h1>Upload Files</h1>
+    <form action="http://localhost:5001/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="upload[]" multiple>
+        <button type="submit">Upload</button>
+    </form>
+</body>
+</html>

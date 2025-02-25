@@ -1,27 +1,32 @@
 package main
 
 import (
-    "fmt"
-    "net/http"
+	"fmt"
+	"log"
+	"os"
+	"path/filepath"
+	"github.com/gin-gonic/gin"
 )
-
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "Welcome at a Memory Game!")
-}
-
-func aboutHandler(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "This is the About Page!")
-}
-func handleUpload(w http.ResponseWriter, r *http.Request) {
-	
-}
 
 func main() {
 
-    http.HandleFunc("/", homeHandler)
-    http.HandleFunc("/about", aboutHandler)
-	http.HandleFunc("/upload", handleUpload)
-    fmt.Println("Server is running on http://localhost:5001")
+	router := gin.Default()
 
-    http.ListenAndServe(":5001", nil)
+	router.Static("/frontend", "../frontend")
+
+	router.GET("/", func(c *gin.Context) {
+		c.File("../frontend/index.html")
+	})
+
+	router.POST("/upload", HandleUpload)
+
+	imagesDir := filepath.Join("..", "images")
+	if err := os.MkdirAll(imagesDir, os.ModePerm); err != nil {
+		log.Fatalf("Failed to create images directory: %v", err)
+	}
+
+	fmt.Println("Server is running on http://localhost:5001")
+	if err := router.Run(":5001"); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }
