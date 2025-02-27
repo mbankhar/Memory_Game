@@ -10,6 +10,7 @@ const Game: React.FC<GameProps> = ({ images, onBack }) => {
   const [cards, setCards] = useState<any[]>([]);
   const [revealed, setRevealed] = useState<number[]>([]);
   const [matched, setMatched] = useState<number[]>([]);
+  const [flipCount, setFlipCount] = useState(0); // New counter
 
   useEffect(() => {
     if (images.length > 0) {
@@ -38,6 +39,7 @@ const Game: React.FC<GameProps> = ({ images, onBack }) => {
       return;
     }
     console.log("Flipping card:", cardId, "Image:", cardImage);
+    setFlipCount(flipCount + 1); // Increment counter
     const newRevealed = [...revealed, cardId];
     setRevealed(newRevealed);
 
@@ -60,6 +62,7 @@ const Game: React.FC<GameProps> = ({ images, onBack }) => {
     return (
       <div className="game-container">
         <h1 className="won-message">You Won!</h1>
+        <p className="no-images">Flips: {flipCount}</p> {/* Show flip count */}
         <button onClick={onBack} className="start-button">Play Again</button>
       </div>
     );
@@ -68,6 +71,7 @@ const Game: React.FC<GameProps> = ({ images, onBack }) => {
   return (
     <div className="game-container">
       <h1>Memory Game</h1>
+      <p>Flips: {flipCount}</p> {/* Show live flip count */}
       {images.length > 0 && cards.length > 0 ? (
         <div className="card-grid">
           {cards.map((card) => {
