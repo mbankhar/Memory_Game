@@ -1,3 +1,5 @@
+![Memory Game Screenshot](https://github.com/mbankhar/Memory_Game/raw/main/memory.png)
+
 🎮 Memory Game
 
 
