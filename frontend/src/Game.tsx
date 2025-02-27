@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "./styles.css";
 
 interface GameProps {
   images: string[];
@@ -11,17 +12,19 @@ const Game: React.FC<GameProps> = ({ images, onBack }) => {
   const [matched, setMatched] = useState<number[]>([]);
 
   useEffect(() => {
-    const fetchCards = async () => {
-      const response = await fetch("/start-game", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ images }),
-      });
-      const data = await response.json();
-      console.log("Cards:", data.cards);
-      setCards(data.cards);
-    };
-    fetchCards();
+    if (images.length > 0) {
+      const fetchCards = async () => {
+        const response = await fetch("/start-game", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ images }),
+        });
+        const data = await response.json();
+        console.log("Cards:", data.cards);
+        setCards(data.cards);
+      };
+      fetchCards();
+    }
   }, [images]);
 
   const getCardSize = (cardCount: number) => {
@@ -55,83 +58,44 @@ const Game: React.FC<GameProps> = ({ images, onBack }) => {
 
   if (allMatched) {
     return (
-      <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-        <h1 style={{ fontSize: "28px", marginBottom: "20px", textAlign: "center" }}>
-          You Won!
-        </h1>
-        <button
-          onClick={onBack}
-          style={{
-            display: "block",
-            margin: "20px auto 0",
-            padding: "10px 20px",
-            backgroundColor: "#5cb85c",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "16px",
-          }}
-        >
-          Play Again
-        </button>
+      <div className="game-container">
+        <h1 className="won-message">You Won!</h1>
+        <button onClick={onBack} className="start-button">Play Again</button>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-      <h1 style={{ fontSize: "28px", marginBottom: "20px", textAlign: "center" }}>
-        Memory Game
-      </h1>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "20px",
-        }}
-      >
-    {cards.map((card) => {
-    const isRevealed = revealed.includes(card.id) || matched.includes(card.id);
-    console.log("Rendering card", card.id, "isRevealed:", isRevealed);
-    return (
-        <div
-        key={card.id}
-        onClick={() => handleCardClick(card.id, card.image)}
-        style={{
-            width: `${cardSize}px`,
-            height: `${cardSize}px`,
-            cursor: "pointer",
-            borderRadius: "8px",
-            overflow: "hidden",
-        }}
-        >
-        <img
-            src={isRevealed ? card.image : "/back/back.jpg"}
-            alt={isRevealed ? "front" : "back"}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-        />
+    <div className="game-container">
+      <h1>Memory Game</h1>
+      {images.length > 0 && cards.length > 0 ? (
+        <div className="card-grid">
+          {cards.map((card) => {
+            const isRevealed = revealed.includes(card.id) || matched.includes(card.id);
+            console.log("Rendering card", card.id, "isRevealed:", isRevealed);
+            return (
+              <div
+                key={card.id}
+                onClick={() => handleCardClick(card.id, card.image)}
+                className="card"
+                style={{ width: `${cardSize}px`, height: `${cardSize}px` }}
+              >
+                <div className="card-inner" style={{ transform: isRevealed ? "rotateY(180deg)" : "rotateY(0deg)" }}>
+                  <div className="card-back">
+                    <img src="/back/back.jpg" alt="back" />
+                  </div>
+                  <div className="card-front">
+                    <img src={card.image} alt="front" />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
-    );
-    })}
-               
-      </div>
-      <button
-        onClick={onBack}
-        style={{
-          display: "block",
-          margin: "20px auto 0",
-          padding: "10px 20px",
-          backgroundColor: "#d9534f",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          fontSize: "16px",
-        }}
-      >
-        Back to Upload
-      </button>
+      ) : (
+        <p className="no-images">No images to play with!</p>
+      )}
+      <button onClick={onBack} className="back-button">Back to Upload</button>
     </div>
   );
 };
