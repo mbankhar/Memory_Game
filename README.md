@@ -2,6 +2,7 @@
 
 🎮 Memory Game
 
+📸 All preset images in this game were taken by me in the Black Forest. As a hobby photographer, I wanted to add a personal touch to this project.
 
 A fun and interactive memory card game with a Go backend and a React frontend. Upload your own images, flip cards, and test your memory by matching pairs—all while tracking your flip count. Perfect for a quick brain teaser or a custom game with personal photos!
 
@@ -56,6 +57,3 @@ Before starting, remove unwanted images by clicking the "X" button on each thumb
 🔁 Play Again
 After winning, click "Play Again" to restart and return to the upload screen.
 ✨ Enjoy the game! 🚀
-
-Image Link:
-https://github.com/mbankhar/Memory_Game/raw/main/memory.png
