@@ -5,18 +5,18 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-
+	"net/http"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	router := gin.Default()
+	router := gin.Default();
 
 	// Serve React build as the root
-	router.Static("/static", "../frontend/build/static") // Serve static assets
+	router.Static("/static", "../frontend/build/static")
 	router.StaticFile("/index.html", "../frontend/build/index.html")
 	router.GET("/", func(c *gin.Context) {
-		c.File("../frontend/build/index.html") // Serve index.html for root
+		c.File("../frontend/build/index.html")
 	})
 
 	// Serve images and back
@@ -26,6 +26,21 @@ func main() {
 	// API routes
 	router.POST("/upload", HandleUpload)
 	router.POST("/start-game", startGame)
+	router.GET("/images", func(c *gin.Context) { // New endpoint
+		imagesDir := filepath.Join("..", "images")
+		files, err := os.ReadDir(imagesDir)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read images directory"})
+			return
+		}
+		var imagePaths []string
+		for _, file := range files {
+			if !file.IsDir() {
+				imagePaths = append(imagePaths, filepath.Join("/images", file.Name()))
+			}
+		}
+		c.JSON(http.StatusOK, gin.H{"images": imagePaths})
+	})
 
 	// Ensure directories exist
 	imagesDir := filepath.Join("..", "images")

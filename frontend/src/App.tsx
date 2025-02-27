@@ -1,9 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Game from "./Game";
 
 const App: React.FC = () => {
   const [images, setImages] = useState<string[]>([]);
   const [gameStarted, setGameStarted] = useState(false);
-  const [cards, setCards] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const response = await fetch("/images");
+        const data = await response.json();
+        console.log("Existing images:", data.images);
+        setImages(data.images);
+      } catch (error) {
+        console.error("Failed to load images:", error);
+      }
+    };
+    fetchImages();
+  }, []);
 
   const handleUpload = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -21,79 +35,16 @@ const App: React.FC = () => {
     }
   };
 
-  const startGame = async () => {
-    const response = await fetch("/start-game", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ images }), // Wrap images in an object
-    });
-    const data = await response.json();
-    console.log("Cards:", data.cards);
-    setCards(data.cards);
-    setGameStarted(true);
-  };
-
   const deleteImage = (index: number) => {
     setImages(images.filter((_, i) => i !== index));
   };
 
-  const getCardSize = (cardCount: number) => {
-    if (cardCount <= 8) return 192;
-    if (cardCount <= 16) return 128;
-    return 96;
+  const startGame = () => {
+    setGameStarted(true);
   };
 
   if (gameStarted) {
-    const cardSize = getCardSize(cards.length);
-    return (
-      <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-        <h1 style={{ fontSize: "28px", marginBottom: "20px", textAlign: "center" }}>
-          Memory Game
-        </h1>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: "20px",
-          }}
-        >
-          {cards.map((card) => (
-            <div
-              key={card.id}
-              style={{
-                width: `${cardSize}px`,
-                height: `${cardSize}px`,
-                backgroundColor: "#ddd",
-                borderRadius: "8px",
-                overflow: "hidden",
-              }}
-            >
-              <img
-                src="/back/back.jpg"
-                alt="card back"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </div>
-          ))}
-        </div>
-        <button
-          onClick={() => setGameStarted(false)}
-          style={{
-            display: "block",
-            margin: "20px auto 0",
-            padding: "10px 20px",
-            backgroundColor: "#d9534f",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "16px",
-          }}
-        >
-          Back to Upload
-        </button>
-      </div>
-    );
+    return <Game images={images} onBack={() => setGameStarted(false)} />;
   }
 
   return (

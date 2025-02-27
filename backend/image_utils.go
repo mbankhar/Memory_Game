@@ -12,7 +12,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Card defines the structure of a game card
 type Card struct {
 	ID      int    `json:"id"`
 	Image   string `json:"image"`
@@ -58,7 +57,8 @@ func HandleUpload(c *gin.Context) {
 			c.String(http.StatusInternalServerError, "Unable to save file: %v", err)
 			return
 		}
-		imagePaths = append(imagePaths, dst)
+		// Use browser-friendly path
+		imagePaths = append(imagePaths, filepath.Join("/images", file.Filename))
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -68,40 +68,33 @@ func HandleUpload(c *gin.Context) {
 }
 
 func startGame(c *gin.Context) {
-    // Define a struct to match the frontend's JSON
-    type RequestBody struct {
-        Images []string `json:"images"`
-    }
-    var reqBody RequestBody
-    if err := c.BindJSON(&reqBody); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-        return
-    }
+	type RequestBody struct {
+		Images []string `json:"images"`
+	}
+	var reqBody RequestBody
+	if err := c.BindJSON(&reqBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
 
-    // Use reqBody.Images as the image paths
-    imagePaths := reqBody.Images
+	imagePaths := reqBody.Images
+	cards := append(imagePaths, imagePaths...)
 
-    // Duplicate the images
-    cards := append(imagePaths, imagePaths...)
+	rand.Shuffle(len(cards), func(i, j int) {
+		cards[i], cards[j] = cards[j], cards[i]
+	})
 
-    // Shuffle the cards
-    rand.Shuffle(len(cards), func(i, j int) {
-        cards[i], cards[j] = cards[j], cards[i]
-    })
+	gameCards := make([]Card, len(cards))
+	for i, img := range cards {
+		gameCards[i] = Card{
+			ID:      i,
+			Image:   img, // Already /images/... from frontend
+			Matched: false,
+		}
+	}
 
-    // Create game state with Card structs
-    gameCards := make([]Card, len(cards))
-    for i, img := range cards {
-        gameCards[i] = Card{
-            ID:      i,
-            Image:   img,
-            Matched: false,
-        }
-    }
-
-    // Send response with cards and back image
-    c.JSON(http.StatusOK, gin.H{
-        "cards": gameCards,
-        "back":  "../back/back.jpg",
-    })
+	c.JSON(http.StatusOK, gin.H{
+		"cards": gameCards,
+		"back":  "/back/back.jpg", // Match frontend path
+	})
 }
