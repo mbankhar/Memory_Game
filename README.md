@@ -2,9 +2,12 @@
 
 🎮 Memory Game
 
-📸 All preset images in this game were taken by me in the Black Forest. As a hobby photographer, I wanted to add a personal touch to this project.
+📸 All preset images in this game were taken by me in the Black Forest.
+As a hobby photographer, I wanted to add a personal touch to this project.
 
-A fun and interactive memory card game with a Go backend and a React frontend. Upload your own images, flip cards, and test your memory by matching pairs—all while tracking your flip count. Perfect for a quick brain teaser or a custom game with personal photos!
+A fun and interactive memory card game with a Go backend and a React frontend. 
+Upload your own images, flip cards, and test your memory by matching pairs—all while tracking your flip count.
+Perfect for a quick brain teaser or a custom game with personal photos!
 
 🚀 Features
 🎨 Custom Image Upload – Use your own images to personalize the game.
@@ -13,6 +16,7 @@ A fun and interactive memory card game with a Go backend and a React frontend. U
 📱 Responsive Design – Smooth gameplay on both desktop & mobile.
 ⚡ Backend Processing – Go-powered server for image resizing & game logic.
 🎭 Interactive UI – React-based frontend with smooth animations.
+
 🛠️ Tech Stack
 Backend: Go (Gin framework, imaging library)
 Frontend: React (TypeScript)
