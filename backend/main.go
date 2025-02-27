@@ -26,6 +26,15 @@ func main() {
 	// API routes
 	router.POST("/upload", HandleUpload)
 	router.POST("/start-game", startGame)
+	router.DELETE("/images/:filename", func(c *gin.Context) {
+		filename := c.Param("filename")
+		filePath := filepath.Join("..", "images", filename)
+		if err := os.Remove(filePath); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete image"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Image deleted"})
+	})
 	router.GET("/images", func(c *gin.Context) { // New endpoint
 		imagesDir := filepath.Join("..", "images")
 		files, err := os.ReadDir(imagesDir)
